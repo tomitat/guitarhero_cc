@@ -66,19 +66,34 @@ function memoryCleaner()
     end
 end
 
-function love.update(dt)
-    dt =  math.min(dt, 1/60)
-    if core.scene == 1 then
-        key.appendBuffer()
-        key.scrolling()
-        memoryCleaner()
-    end
+
 
     if core.scene == 0 then
         if love.mouse.isDown(1) then
             core.scene = 1
         end
     end
+end
+
+function key.scrolling()
+    for i = 0, core.touch do
+        if (buf[i] ~= nil) then
+            buf[i].y = buf[i].y + 10
+        end
+
+        if (buf[i] ~= nil and buf[i].y == 600) then
+            buf[i].y = nil buf[i].x = nil buf[i] = nil
+        end
+    end
+end
+
+function core.drawSceneMenu()
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.draw(core.logo, 100, 20)
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.rectangle("fill", 0, 500, 800, 60)
+    love.graphics.setColor(0, 0, 0, 1)
+    love.graphics.print("Play", 50, 500, 0, 4, 4)
 end
 
 function core.drawSceneGame()
@@ -97,16 +112,6 @@ function core.drawSceneGame()
         love.audio.play(core.music)
     end
 end
-
-function core.drawSceneMenu()
-    love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.draw(core.logo, 100, 20)
-    love.graphics.setColor(1, 1, 1, 1)
-    love.graphics.rectangle("fill", 0, 500, 800, 60)
-    love.graphics.setColor(0, 0, 0, 1)
-    love.graphics.print("Play", 50, 500, 0, 4, 4)
-end
-
 
 function love.draw()
     love.graphics.print("SCORE", 420, 150, 0, 4, 4)
@@ -149,3 +154,10 @@ function love.keypressed(myKey)
     end
 end
 
+function love.update(dt)
+    dt =  math.min(dt, 1/60)
+    if core.scene == 1 then
+        key.appendBuffer()
+        key.scrolling()
+        memoryCleaner()
+    end
