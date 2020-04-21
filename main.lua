@@ -8,7 +8,6 @@ local key = {}
 local buf = {}
 
 function key.setting()
-    -- setup keys config --
     key[0], key[1], key[2], key[3] = {}, {}, {}, {}
     key{0}.x = 100 key[0].y = -50
     key[0].width = 50 key[0].height = 50
@@ -31,12 +30,13 @@ function key.setting()
 end
 
 function love.load()
+    key.setting()
     success = love.window.setMode(800, 600, flags) core["scene"] = 0
     core["touch"] = -1
     core["mem"] = 0
-    key.setting()
     core["score"] = 0
     love.keyboard.setKeyRepeat(false)
+    core["logo"] = love.graphics.newImage("logo.png")
 end
 
 function key.appendBuffer()
@@ -61,21 +61,62 @@ end
 
 function memoryCleaner()
     core.mem = core.mem + 1
-    if (core.mem = 500) then
+    if (core.mem == 500) then
         collectgarbage()
     end
 end
 
 function love.update(dt)
-    key.appendBuffer()
-    key.scrolling()
-    memoryCleaner()
-    dt = math.min(dt, 1/60)
+    dt =  math.min(dt, 1/60)
+    if core.scene == 1 then
+        key.appendBuffer()
+        key.scrolling()
+        memoryCleaner()
+    end
+
+    if core.scene == 0 then
+        if more.mouse.isDown(1) then
+            core.scene = 1
+        end
+    end
 end
+
+function core.drawSceneGame()
+    core.ui() for i = 0, core.touch do
+        if (buf[1] ~= 0) then
+            love.graphics.setColor(0, 0.66, 0.66, 1)
+            love.graphics.rectangle("fill", buf[i].x, buf[i].y, 50, 30)
+        end
+    end
+    love.graphics.setColor(1, 1, 1, 0.5)
+    love.graphics.rectangle("fill", 0, 500, 800, 40)
+    love.graphics.print("SCORE:", 420, 150, 0, 4, 4)
+    love.graphics.print(core.score, 420, 200, 0, 4, 4)
+    if core.scene == 1 then
+        core["music"] = love.audio.newSource("music.mp3", 'steam')
+        love.audio.play(core.music)
+    end
+end
+
+function core.drawSceneMenu()
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.draw(core.logo, 100, 20)
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.rectangle("fill", 0, 500, 800, 60)
+    love.graphics.setColor(0, 0, 0, 1)
+    love.graphics.print("Play", 50, 500, 0, 4, 4)
+end
+
 
 function love.draw()
     love.graphics.print("SCORE", 420, 150, 0, 4, 4)
     love.graphics.print(core.score, 420, 200, 0, 4, 4)
+    if core.scene == 1 then
+        core.drawSceneGame()
+    end
+    if core.scene == 0 then
+        core.drawSceneMenu()
+    end
 end
 
 function key.checkClicked(x)
