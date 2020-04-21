@@ -9,7 +9,7 @@ local buf = {}
 
 function key.setting()
     key[0], key[1], key[2], key[3] = {}, {}, {}, {}
-    key{0}.x = 100 key[0].y = -50
+    key[0].x = 100 key[0].y = -50
     key[0].width = 50 key[0].height = 50
     key[0].mode = 0
     key[1].x = 175
@@ -75,7 +75,7 @@ function love.update(dt)
     end
 
     if core.scene == 0 then
-        if more.mouse.isDown(1) then
+        if love.mouse.isDown(1) then
             core.scene = 1
         end
     end
